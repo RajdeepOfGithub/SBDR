@@ -1,1 +1,54 @@
+# ========== DATA FILES (NEVER PUSH TO GITHUB) ==========
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/synthetic/*
+!data/synthetic/.gitkeep
+*.csv
+*.xls
+*.xlsx
+*.parquet
+*.h5
+*.hdf5
+
+# ========== MODEL FILES ==========
+*.pt
+*.pth
+*.pkl
+*.joblib
+models/saved/
+
+# ========== PYTHON ==========
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# ========== JUPYTER ==========
+.ipynb_checkpoints/
+
+# ========== macOS ==========
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ========== IDE ==========
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ========== STREAMLIT ==========
+.streamlit/secrets.toml
+
+# ========== OBSIDIAN ==========
+# We KEEP .obsidian/ tracked so vault config syncs across team
+# But ignore workspace files (personal to each machine)
 .obsidian/workspace.json
+.obsidian/workspace-mobile.json
