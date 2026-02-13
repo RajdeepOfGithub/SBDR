@@ -1,1 +1,15 @@
-{}
+{
+  "userIgnoreFilters": [
+    "notebooks/",
+    "src/",
+    "src/data/",
+    "src/explainability/",
+    "src/models/",
+    "src/utils/",
+    "data/",
+    "data/processed/",
+    "data/raw/",
+    "data/synthetic/",
+    "dashboard/"
+  ]
+}
