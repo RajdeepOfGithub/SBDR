@@ -1,3 +1,6 @@
+# ========== SECRETS ==========
+.env
+
 # ========== DATA FILES (NEVER PUSH TO GITHUB) ==========
 data/raw/*
 !data/raw/.gitkeep
@@ -46,6 +49,10 @@ build/
 
 # ========== STREAMLIT ==========
 .streamlit/secrets.toml
+
+# ========== JSON (except Obsidian config) ==========
+*.json
+!.obsidian/**/*.json
 
 # ========== OBSIDIAN ==========
 # We KEEP .obsidian/ tracked so vault config syncs across team
