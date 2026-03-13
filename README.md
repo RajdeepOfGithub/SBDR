@@ -77,7 +77,7 @@ Multi-modal dataset built from 5 sources:
 ### Phase B — Model Training: IN PROGRESS
 
 - [ ] **B1** — Fine-tune FinBERT → Distress Score (0.0–1.0)
-- [ ] **B2** — Train BiLSTM → Stress Pattern Vector
+- [x] **B2** — Train BiLSTM → Stress Pattern Vector (Notebook 06)
 - [ ] **B3** — Train XGBoost → Recovery Tier Prediction
 - [ ] **B4** — SHAP + LIME Explainability
 
@@ -94,11 +94,16 @@ Multi-modal dataset built from 5 sources:
 ```
 SBDR_main/
 ├── notebooks/
-│   ├── 01_data_loading.ipynb
-│   ├── 02_remaining_datasets.ipynb
-│   ├── 03_dataset_merge.ipynb
-│   ├── 04_feature_engineering.ipynb
-│   └── 05_synthetic_chats.ipynb
+│   ├── Phase 1/
+│   │   ├── 01_data_loading.ipynb
+│   │   ├── 02_remaining_datasets.ipynb
+│   │   ├── 03_dataset_merge.ipynb
+│   │   ├── 04_feature_engineering.ipynb
+│   │   └── 05_synthetic_chats.ipynb
+│   ├── Phase 2/
+│   │   └── DL/
+│   │       └── 06_bilstm_stress_patterns.ipynb
+│   └── Testing Dataset.ipynb
 ├── data/
 │   ├── raw/          (not tracked)
 │   └── processed/    (not tracked)
