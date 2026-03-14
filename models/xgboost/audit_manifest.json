@@ -1,0 +1,26 @@
+{
+  "notebook": "09_audit_layer",
+  "input_file": "../../../data/processed/08_with_recovery_tiers.csv",
+  "output_file": "../../../data/processed/09_with_audit_tiers.csv",
+  "audit_rules": {
+    "A": "recovery_tier == 5 (engineered label override)",
+    "B": "tier_prob_5 >= 0.15 (XGBoost high confidence)",
+    "C": "sp_fraud_rate >= 0.5 AND bilstm_anomaly_flag=1 AND default=1",
+    "D": "De-escalation: Tier5 AND distress_avg > 0.65 AND bilstm_anomaly_flag=0 \u2192 Tier4"
+  },
+  "audit_summary": {
+    "rule_a_triggered": 180,
+    "rule_b_triggered": 473,
+    "rule_c_triggered": 11,
+    "total_escalated": 266,
+    "total_deescalated": 0,
+    "pct_changed": 0.887
+  },
+  "final_tier_distribution": {
+    "tier_1": 10014,
+    "tier_2": 12432,
+    "tier_3": 3209,
+    "tier_4": 3860,
+    "tier_5": 485
+  }
+}

@@ -1,6 +1,9 @@
 # ========== SECRETS ==========
 .env
 
+# ========== CLAUDE CODE (internal session data) ==========
+.claude/
+
 # ========== DATA FILES (NEVER PUSH TO GITHUB) ==========
 data/raw/*
 !data/raw/.gitkeep
@@ -15,12 +18,13 @@ data/synthetic/*
 *.h5
 *.hdf5
 
-# ========== MODEL FILES ==========
+# ========== MODEL WEIGHTS (too large / not for version control) ==========
 *.pt
 *.pth
 *.pkl
 *.joblib
 models/saved/
+# Manifests, plots, indices, and trained XGBoost model ARE pushed (see models/ section)
 
 # ========== PYTHON ==========
 __pycache__/
@@ -50,9 +54,11 @@ build/
 # ========== STREAMLIT ==========
 .streamlit/secrets.toml
 
-# ========== JSON (except Obsidian config) ==========
-*.json
-!.obsidian/**/*.json
+# ========== JSON — block raw data only, allow model manifests & weights ==========
+# Block large raw data JSON files
+data/**/*.json
+# Everything under models/ is allowed (manifests, xgboost model, etc.)
+# .obsidian config JSON is allowed (team vault sync)
 
 # ========== OBSIDIAN ==========
 # We KEEP .obsidian/ tracked so vault config syncs across team

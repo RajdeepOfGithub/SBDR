@@ -1,0 +1,30 @@
+{
+  "notebook": "07_finbert_distress_score",
+  "mode": "zero_shot",
+  "output_file": "../../../data/processed/07_with_distress_scores.csv",
+  "model_checkpoint": "../../../models/finbert/best_model.pt",
+  "pretrained_model": "ProsusAI/finbert",
+  "distress_score_cols": [
+    "distress_turn_1",
+    "distress_turn_2",
+    "distress_turn_3",
+    "distress_avg",
+    "distress_max",
+    "distress_shift"
+  ],
+  "distress_score_formula": "P(negative)*1.0 + P(neutral)*0.5 + P(positive)*0.0",
+  "label_mapping": {
+    "0": "positive",
+    "1": "negative",
+    "2": "neutral"
+  },
+  "model_config": {
+    "max_length": 128,
+    "scoring": "zero-shot classifier probabilities"
+  },
+  "training_summary": {
+    "fine_tuned": false,
+    "reason": "zero-shot mode \u2014 ROCm GPU incompatibility on Radeon 8060S"
+  },
+  "split_source": "../../../models/bilstm/train_val_indices.npz"
+}

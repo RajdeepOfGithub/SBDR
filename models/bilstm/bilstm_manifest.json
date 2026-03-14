@@ -1,0 +1,119 @@
+{
+  "notebook": "06_bilstm_stress_patterns",
+  "output_file": "../../../data/processed/06_with_stress_vectors.csv",
+  "model_checkpoint": "../../../models/bilstm/best_model.pt",
+  "split_indices_file": "../../../models/bilstm/train_val_indices.npz",
+  "stress_embedding_cols": [
+    "stress_dim_00",
+    "stress_dim_01",
+    "stress_dim_02",
+    "stress_dim_03",
+    "stress_dim_04",
+    "stress_dim_05",
+    "stress_dim_06",
+    "stress_dim_07",
+    "stress_dim_08",
+    "stress_dim_09",
+    "stress_dim_10",
+    "stress_dim_11",
+    "stress_dim_12",
+    "stress_dim_13",
+    "stress_dim_14",
+    "stress_dim_15",
+    "stress_dim_16",
+    "stress_dim_17",
+    "stress_dim_18",
+    "stress_dim_19",
+    "stress_dim_20",
+    "stress_dim_21",
+    "stress_dim_22",
+    "stress_dim_23",
+    "stress_dim_24",
+    "stress_dim_25",
+    "stress_dim_26",
+    "stress_dim_27",
+    "stress_dim_28",
+    "stress_dim_29",
+    "stress_dim_30",
+    "stress_dim_31"
+  ],
+  "metadata_cols": [
+    "bilstm_recon_error",
+    "bilstm_anomaly_flag"
+  ],
+  "model_config": {
+    "seq_len": 6,
+    "n_features": 5,
+    "hidden_size": 64,
+    "num_layers": 2,
+    "embed_dim": 32,
+    "dropout": 0.2
+  },
+  "input_features": {
+    "pay_status_cols": [
+      "PAY_0",
+      "PAY_2",
+      "PAY_3",
+      "PAY_4",
+      "PAY_5",
+      "PAY_6"
+    ],
+    "bill_amt_cols": [
+      "BILL_AMT1",
+      "BILL_AMT2",
+      "BILL_AMT3",
+      "BILL_AMT4",
+      "BILL_AMT5",
+      "BILL_AMT6"
+    ],
+    "pay_amt_cols": [
+      "PAY_AMT1",
+      "PAY_AMT2",
+      "PAY_AMT3",
+      "PAY_AMT4",
+      "PAY_AMT5",
+      "PAY_AMT6"
+    ],
+    "util_ratio_cols": [
+      "util_ratio_1",
+      "util_ratio_2",
+      "util_ratio_3",
+      "util_ratio_4",
+      "util_ratio_5",
+      "util_ratio_6"
+    ],
+    "pay_ratio_cols": [
+      "pay_ratio_1",
+      "pay_ratio_2",
+      "pay_ratio_3",
+      "pay_ratio_4",
+      "pay_ratio_5",
+      "pay_ratio_6"
+    ]
+  },
+  "normalization_params": {
+    "pay_status_min": -2.0,
+    "pay_status_max": 8.0,
+    "bill_mean": 8.626185417175293,
+    "bill_std": 3.6122846603393555,
+    "pay_mean": 6.258085250854492,
+    "pay_std": 3.3857362270355225,
+    "pay_ratio_mean": 0.2169354408979416,
+    "pay_ratio_std": 0.40731334686279297
+  },
+  "anomaly_detection": {
+    "threshold_percentile": 95,
+    "threshold_value": 0.004453971982002258,
+    "n_anomalies": 1500,
+    "anomaly_rate": 0.05
+  },
+  "training_summary": {
+    "best_val_loss": 0.0015049514522155127,
+    "epochs_trained": 100
+  },
+  "split_info": {
+    "n_train": 24000,
+    "n_val": 6000,
+    "seed": 42
+  }
+}

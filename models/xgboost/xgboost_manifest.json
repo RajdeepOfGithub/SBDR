@@ -1,0 +1,110 @@
+{
+  "notebook": "08_xgboost_recovery_tier",
+  "output_file": "../../../data/processed/08_with_recovery_tiers.csv",
+  "model_checkpoint": "../../../models/xgboost/best_model.json",
+  "inputs": {
+    "finbert_output": "../../../data/processed/07_with_distress_scores.csv",
+    "bilstm_output": "../../../data/processed/06_with_stress_vectors.csv"
+  },
+  "target": "recovery_tier (1\u20135, rule-engineered)",
+  "tier_definitions": {
+    "1": "Standard Reminder",
+    "2": "Soft Assist",
+    "3": "Hardship",
+    "4": "Severe Genuine Distress",
+    "5": "Strategic Default"
+  },
+  "features": {
+    "total": 116,
+    "bilstm_stress_dims": 32,
+    "bilstm_meta": 2,
+    "finbert_distress": 6,
+    "sparkov": 7,
+    "uci_derived": 69
+  },
+  "metrics": {
+    "accuracy": 0.9335,
+    "f1_macro": 0.7606,
+    "f1_weighted": 0.9355,
+    "auc_roc_macro": 0.9898,
+    "best_round": 191,
+    "best_val_mlogloss": 0.130113
+  },
+  "top_features_by_shap": [
+    {
+      "feature": "avg_pay_delay",
+      "branch": "UCI/Derived",
+      "mean_abs_shap": 2.362896203994751
+    },
+    {
+      "feature": "bilstm_anomaly_flag",
+      "branch": "BiLSTM",
+      "mean_abs_shap": 0.6448825001716614
+    },
+    {
+      "feature": "bilstm_recon_error",
+      "branch": "BiLSTM",
+      "mean_abs_shap": 0.40024635195732117
+    },
+    {
+      "feature": "inquiry_x_delay",
+      "branch": "UCI/Derived",
+      "mean_abs_shap": 0.22857344150543213
+    },
+    {
+      "feature": "worst_month_delay",
+      "branch": "UCI/Derived",
+      "mean_abs_shap": 0.18460944294929504
+    },
+    {
+      "feature": "distress_avg",
+      "branch": "FinBERT",
+      "mean_abs_shap": 0.14074964821338654
+    },
+    {
+      "feature": "distress_max",
+      "branch": "FinBERT",
+      "mean_abs_shap": 0.09275063127279282
+    },
+    {
+      "feature": "mh_status_encoded",
+      "branch": "UCI/Derived",
+      "mean_abs_shap": 0.07179339230060577
+    },
+    {
+      "feature": "sp_total_spend",
+      "branch": "Sparkov",
+      "mean_abs_shap": 0.07138535380363464
+    },
+    {
+      "feature": "months_delinquent",
+      "branch": "UCI/Derived",
+      "mean_abs_shap": 0.06880445778369904
+    }
+  ],
+  "branch_shap_contribution": {
+    "UCI/Derived": 3.595767021179199,
+    "BiLSTM": 1.4138071537017822,
+    "FinBERT": 0.2815258204936981,
+    "Sparkov": 0.12234342843294144
+  },
+  "split_source": "../../../models/bilstm/train_val_indices.npz",
+  "xgb_params": {
+    "objective": "multi:softprob",
+    "num_class": 5,
+    "eval_metric": "mlogloss",
+    "max_depth": 6,
+    "learning_rate": 0.05,
+    "n_estimators": 500,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "min_child_weight": 5,
+    "gamma": 0.1,
+    "reg_alpha": 0.1,
+    "reg_lambda": 1.0,
+    "tree_method": "hist",
+    "random_state": 42,
+    "n_jobs": -1,
+    "early_stopping_rounds": 30
+  }
+}
