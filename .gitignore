@@ -65,3 +65,6 @@ data/**/*.json
 # But ignore workspace files (personal to each machine)
 .obsidian/workspace.json
 .obsidian/workspace-mobile.json
+
+# ========== PRESENTATION ASSETS ==========
+Video/

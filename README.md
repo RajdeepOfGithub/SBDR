@@ -98,12 +98,12 @@ Multi-modal dataset built from 5 sources:
 - [x] **B2** — BiLSTM autoencoder stress vectors + anomaly detection — 30K × 122 (Notebook 06)
 - [x] **B3** — XGBoost 5-tier classifier — 93.4% acc, 0.990 AUC (Notebook 08)
 - [x] **B3.5** — Rule-based strategic default audit layer — 485 flagged (Notebook 09)
-- [ ] **B4** — SHAP + LIME explainability (in progress)
+- [x] **B4** — SHAP feature importances + branch contribution analysis (captured in Notebook 08; LIME out of scope)
 
 ### Phase C — Deployment: IN PROGRESS
 
-- [ ] **C1** — Streamlit Dashboard
-- [ ] **C2** — Fairness Audit
+- [x] **C1** — Streamlit Dashboard (`dashboard.py`) — multi-branch evidence, fairness audit, customer roster, B3.5 audit panel
+- [x] **C2** — Fairness Audit — demographic tier distribution by SEX, AGE group, EDUCATION (in dashboard)
 - [ ] **C3** — Final Testing + Documentation
 
 ---
@@ -135,6 +135,7 @@ SBDR/
 │   ├── raw/          (not tracked — run notebooks to reproduce)
 │   └── processed/    (not tracked — run notebooks to reproduce)
 ├── src/
+├── dashboard.py          — Streamlit multi-branch intelligence dashboard
 ├── dashboard/
 ├── docs/
 ├── team/
