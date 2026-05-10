@@ -9,7 +9,7 @@
 ![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B?logo=streamlit&logoColor=white)
 ![Status](https://img.shields.io/badge/Phase_A-Complete-brightgreen)
 ![Status](https://img.shields.io/badge/Phase_B-Complete-brightgreen)
-![Status](https://img.shields.io/badge/Phase_C-In_Progress-yellow)
+![Status](https://img.shields.io/badge/Phase_C-Complete-brightgreen)
 
 **Team:** Roy, Neel, Tanya
 **Course:** DATA 606 Capstone — UMBC
@@ -100,11 +100,11 @@ Multi-modal dataset built from 5 sources:
 - [x] **B3.5** — Rule-based strategic default audit layer — 485 flagged (Notebook 09)
 - [x] **B4** — SHAP feature importances + branch contribution analysis (captured in Notebook 08; LIME out of scope)
 
-### Phase C — Deployment: IN PROGRESS
+### Phase C — Deployment: COMPLETE ✅
 
 - [x] **C1** — Streamlit Dashboard (`dashboard.py`) — multi-branch evidence, fairness audit, customer roster, B3.5 audit panel
 - [x] **C2** — Fairness Audit — demographic tier distribution by SEX, AGE group, EDUCATION (in dashboard)
-- [ ] **C3** — Final Testing + Documentation
+- [x] **C3** — Final Testing + Documentation (`tests/test_pipeline.py` — 38 tests, all passing)
 
 ---
 

@@ -304,3 +304,78 @@ When working on the SBDR project:
 - PyTorch: 2.9.1+rocm6.4 (NVIDIA packages fully removed)
 - GPU verified: AMD Radeon 8060S, 32GB, torch.cuda.is_available() = True
 
+---
+
+## Project Phase Status (updated 2026-04-29)
+
+### Phase A — COMPLETE ✅
+All 5 notebooks done. Final output: `data/processed/sbdr_final_dataset.csv` (30K × 88)
+
+### Phase B — COMPLETE ✅
+- B1 FinBERT: zero-shot (ROCm GPU segfaults prevented fine-tuning) → `data/processed/07_with_distress_scores.csv` (30K × 94)
+- B2 BiLSTM: trained 100 epochs, anomaly_rate=5% → `data/processed/06_with_stress_vectors.csv` (30K × 122)
+- B3 XGBoost: accuracy=93.4%, AUC-ROC=0.990 → `data/processed/08_with_recovery_tiers.csv` (30K × 135)
+- B3.5 Audit Layer: 485 Tier 5 flagged (+121%) → `data/processed/09_with_audit_tiers.csv` (30K × 142)
+- B4 SHAP: captured in Notebook 08 (LIME out of scope)
+
+### Phase C — COMPLETE ✅
+- C1 Dashboard (`dashboard.py`): COMPLETE ✅ — see details below
+- C2 Fairness Audit: COMPLETE ✅ — in dashboard, SEX/AGE/EDUCATION sections
+- C3 Final Testing + Documentation: COMPLETE ✅ — `tests/test_pipeline.py` (38 tests, all passing)
+
+---
+
+## Dashboard (`dashboard.py`) — Current State
+
+**Streamlit version:** 1.55.0
+**Start command:**
+```bash
+source .venv/bin/activate && nohup streamlit run dashboard.py --server.port 8501 --server.headless true > /tmp/streamlit.log 2>&1 &
+```
+**Access:** http://localhost:8501
+
+### Design
+- Dark background `#060b18` with radial gradient ambient glows
+- Fonts: **Orbitron** (headlines/KPI values) + **Space Mono** (body) from Google Fonts
+- Glassmorphism cards with `rgba(255,255,255,0.03)` background + border glow
+- JS-animated KPI counter cards via `st.components.v1.html()`
+- Plotly charts: transparent bg, `rgba(255,255,255,0.06)` gridlines
+
+### Data source
+`data/processed/09_with_audit_tiers.csv` — 30,000 rows × 142 columns (all real pipeline output, no fabricated values)
+
+### Sections
+1. Hero header + 4 animated KPI cards (portfolio size, Tier 5 count, accuracy, AUC-ROC)
+2. Sidebar: tier filter, distress slider, anomaly checkbox, model metrics, dataset info
+3. Row 1: Tier distribution bar chart + Top SHAP features bar chart
+4. Row 2: Distress score histogram + Branch contribution donut
+5. Multi-Branch Customer Evidence: FinBERT chat panel, BiLSTM payment timeline, XGBoost tier probabilities, Sparkov signals
+6. B3.5 Audit Panel: spotlight Tier 5 case + full audit roster table
+7. Fairness & Demographic Audit (C2): gender / age group / education stacked 100% bars
+8. Customer Roster: searchable/filterable dataframe with full 142-column output
+
+### Known CSS fixes applied
+- `#MainMenu, footer, header { visibility: hidden }` caused sidebar toggle to disappear in Streamlit 1.55 — fixed by only hiding specific toolbar elements inside header, not the header itself
+- `font=dict(size=X)` + `font_color=` magic underscore conflict in Plotly legend dicts — merged into `font=dict(size=X, color=Y)`
+- All `#334155` text color references replaced with `#64748b` or `#94a3b8` (was near-invisible on dark bg)
+- Bar chart `textfont` colors: `#334155` → `#94a3b8`
+- TIER_COLORS[5] changed from `#1e293b` (invisible on dark) to `#9333ea` (purple)
+- TIER_DIM changed from `#e2e8f0` (bright on dark) to `rgba(255,255,255,0.12)`
+
+### Supporting docs created
+- `LIMITATIONS.md` — L1–L5 known limitations with root causes, measured impact, mitigations
+- `README.md` — updated to reflect all Phase B complete, C1+C2 complete
+
+---
+
+## Final Pipeline Column Map (09_with_audit_tiers.csv — 142 cols)
+- UCI raw: 24 cols (LIMIT_BAL, SEX, AGE, EDUCATION, MARRIAGE, PAY_0–6, BILL_AMT1–6, PAY_AMT1–6, default payment next month)
+- UCI derived: 38 cols (pay ratios, util ratios, trend features, interaction terms)
+- LC: 12 cols (lc_loan_amnt_mean, lc_annual_inc_mean, etc.)
+- Sparkov: 7 cols (sp_total_spend, sp_fraud_rate, etc.)
+- Chat text: 3 cols (chat_turn_1/2/3)
+- FinBERT: 6 cols (distress_turn1/2/3, distress_avg, distress_max, distress_shift)
+- BiLSTM: 34 cols (bilstm_dim_0–31, bilstm_recon_error, bilstm_anomaly_flag)
+- XGBoost: 7 cols (recovery_tier, tier_prob_1–5)
+- Audit: 7 cols (recovery_tier_final, audit_rule, audit_escalated, audit_deescalated, etc.)
+

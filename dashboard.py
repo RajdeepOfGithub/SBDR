@@ -61,16 +61,26 @@ st.set_page_config(
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
 *, html, body, [class*="css"], .stApp {
     font-family: 'Space Mono', 'Courier New', monospace !important;
+}
+.material-icons, .material-icons-outlined, .material-icons-round {
+    font-family: 'Material Icons' !important;
+    font-feature-settings: 'liga' !important;
 }
 h1, h2, h3, .kpi-value, .mstrip-value, .section-label, .gradient-headline {
     font-family: 'Orbitron', 'Space Mono', monospace !important;
 }
 
 /* ── Base ── */
-#MainMenu, footer, header { visibility: hidden; }
+#MainMenu { visibility: hidden; }
+footer { visibility: hidden; }
+header { background: transparent !important; }
+header [data-testid="stDecoration"],
+header a[href*="streamlit.io"],
+header .stDeployButton { display: none !important; }
 .block-container { padding: 1.75rem 2.5rem 4rem 2.5rem !important; max-width: 100% !important; position: relative; z-index: 1; }
 
 .stApp {
@@ -113,6 +123,64 @@ h1, h2, h3, .kpi-value, .mstrip-value, .section-label, .gradient-headline {
 }
 [data-testid="stSidebar"] button:hover {
     background: rgba(99,102,241,0.25) !important;
+}
+
+/* ── Sidebar collapse / expand toggle ── */
+[data-testid="collapsedControl"] {
+    background: rgba(99,102,241,0.2) !important;
+    border: 1px solid rgba(99,102,241,0.35) !important;
+    border-radius: 0 8px 8px 0 !important;
+    color: #a5b4fc !important;
+}
+[data-testid="collapsedControl"]:hover {
+    background: rgba(99,102,241,0.35) !important;
+}
+[data-testid="collapsedControl"] svg {
+    fill: #a5b4fc !important;
+    stroke: #a5b4fc !important;
+}
+/* Fix: global Space Mono override breaks Material Symbols ligatures.
+   Zero out the broken text and replace with CSS arrow characters. */
+[data-testid="collapsedControl"] span,
+[data-testid="collapsedControl"] p {
+    font-size: 0 !important;
+    line-height: 0 !important;
+}
+[data-testid="collapsedControl"] span::after,
+[data-testid="collapsedControl"] p::after {
+    content: '❯';
+    font-size: 16px !important;
+    color: #a5b4fc;
+    font-family: 'Space Mono', monospace !important;
+    line-height: 1 !important;
+}
+button[data-testid="baseButton-secondary"][aria-label="Close sidebar"],
+button[data-testid="baseButton-secondary"][aria-label="Open sidebar"] {
+    color: #a5b4fc !important;
+    background: rgba(99,102,241,0.15) !important;
+    border: 1px solid rgba(99,102,241,0.3) !important;
+}
+button[data-testid="baseButton-secondary"][aria-label="Close sidebar"] span,
+button[data-testid="baseButton-secondary"][aria-label="Open sidebar"] span {
+    font-size: 0 !important;
+    line-height: 0 !important;
+}
+button[data-testid="baseButton-secondary"][aria-label="Close sidebar"] span::after {
+    content: '❮';
+    font-size: 16px !important;
+    color: #a5b4fc;
+    font-family: 'Space Mono', monospace !important;
+    line-height: 1 !important;
+}
+button[data-testid="baseButton-secondary"][aria-label="Open sidebar"] span::after {
+    content: '❯';
+    font-size: 16px !important;
+    color: #a5b4fc;
+    font-family: 'Space Mono', monospace !important;
+    line-height: 1 !important;
+}
+section[data-testid="stSidebar"] > div > div > button {
+    color: #a5b4fc !important;
 }
 
 /* ── Animations ── */
@@ -200,7 +268,7 @@ h1, h2, h3, .kpi-value, .mstrip-value, .section-label, .gradient-headline {
 .mstrip-card:hover { border-color: rgba(129,140,248,0.25); transform: translateY(-1px); }
 .mstrip-label { font-size: 10px; font-weight: 700; color: #3d4f6b; text-transform: uppercase; letter-spacing: 0.1em; }
 .mstrip-value { font-size: 22px; font-weight: 900; color: #818cf8; margin-top: 5px; letter-spacing: 1px; font-family: 'Orbitron', 'Space Mono', monospace !important; }
-.mstrip-sub   { font-size: 11px; color: #334155; margin-top: 3px; }
+.mstrip-sub   { font-size: 11px; color: #64748b; margin-top: 3px; }
 
 /* ── Audit panel rows ── */
 .audit-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
@@ -340,7 +408,7 @@ with st.sidebar:
                   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
         🛡️ SBDR Platform
       </div>
-      <p style="color:#334155;font-size:11px;margin:3px 0 0 0;">Intelligence · Collections · Compassion</p>
+      <p style="color:#64748b;font-size:11px;margin:3px 0 0 0;">Intelligence · Collections · Compassion</p>
     </div>
     """, unsafe_allow_html=True)
     st.markdown("---")
@@ -363,14 +431,14 @@ with st.sidebar:
                      ("F1 Macro",    f"{m['f1_macro']*100:.1f}%")]:
         st.markdown(
             f'<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);">'
-            f'<span style="font-size:12px;color:#334155;">{lbl}</span>'
+            f'<span style="font-size:12px;color:#64748b;">{lbl}</span>'
             f'<span style="font-size:12px;font-weight:700;color:#818cf8;">{val}</span></div>',
             unsafe_allow_html=True,
         )
     st.markdown("---")
 
     st.markdown('<p style="color:#3d4f6b;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;">Dataset</p>', unsafe_allow_html=True)
-    st.markdown('<p style="color:#334155;font-size:12px;">30,000 customers · 142 features<br>UCI · LC · Sparkov · FinBERT · BiLSTM</p>', unsafe_allow_html=True)
+    st.markdown('<p style="color:#64748b;font-size:12px;">30,000 customers · 142 features<br>UCI · LC · Sparkov · FinBERT · BiLSTM</p>', unsafe_allow_html=True)
 
     if st.button("↺ Reset Filters", use_container_width=True):
         st.rerun()
@@ -426,7 +494,7 @@ st.markdown("""
              background-clip:text;text-transform:uppercase;">
     Sentimental-Behavioral Debt Recovery
   </h1>
-  <p style="color:#334155;font-size:13px;margin:6px 0 0 0;font-weight:400;">
+  <p style="color:#64748b;font-size:13px;margin:6px 0 0 0;font-weight:400;">
     Multi-Modal AI Framework &nbsp;·&nbsp; FinBERT · BiLSTM · XGBoost · Audit Layer &nbsp;·&nbsp; 30,000 Customers · 142 Features
   </p>
 </div>
@@ -489,7 +557,7 @@ with c1:
         y=tier_counts.values.tolist(),
         marker_color=bar_colors, marker_line_width=0,
         text=text_labels, textposition="outside",
-        textfont=dict(size=11, family="Space Mono, monospace", color="#334155"),
+        textfont=dict(size=11, family="Space Mono, monospace", color="#94a3b8"),
         hovertemplate="<b>%{x}</b><br>%{y:,} customers<extra></extra>",
     ))
     fig_tier.update_layout(
@@ -512,7 +580,7 @@ with c2:
     bar_clrs   = [BRANCH_COLORS.get(f["branch"], "#94a3b8") for f in top_feats][::-1]
 
     legend_html = " &nbsp; ".join(
-        f'<span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#334155;">'
+        f'<span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;color:#94a3b8;">'
         f'<span style="width:7px;height:7px;border-radius:50%;background:{c};box-shadow:0 0 5px {c}80;display:inline-block;"></span>{b}</span>'
         for b, c in BRANCH_COLORS.items()
     )
@@ -522,7 +590,7 @@ with c2:
         x=vals, y=names, orientation="h",
         marker_color=bar_clrs, marker_line_width=0,
         text=[f"{v:.3f}" for v in vals], textposition="outside",
-        textfont=dict(size=10.5, family="Space Mono, monospace", color="#334155"),
+        textfont=dict(size=10.5, family="Space Mono, monospace", color="#94a3b8"),
         hovertemplate="<b>%{y}</b><br>SHAP: %{x:.4f}<extra></extra>",
     ))
     fig_shap.update_layout(
@@ -564,7 +632,7 @@ with c3:
         yaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.06)", showline=False, zeroline=False,
                    title=dict(text="Customers", font=dict(size=11))),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0,
-                    font=dict(size=10.5), bgcolor="rgba(0,0,0,0)", font_color="#64748b"),
+                    font=dict(size=10.5, color="#64748b"), bgcolor="rgba(0,0,0,0)"),
     )
     st.plotly_chart(fig_hist, use_container_width=True, config={"displayModeBar": False}, key="dist_hist")
     st.markdown('</div>', unsafe_allow_html=True)
@@ -922,7 +990,7 @@ def _fairness_bar(pivot: pd.DataFrame, key: str) -> go.Figure:
                    title=dict(text="% of Group", font=dict(size=11)),
                    range=[0, 105]),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0,
-                    font=dict(size=10), bgcolor="rgba(0,0,0,0)", font_color="#64748b"),
+                    font=dict(size=10, color="#64748b"), bgcolor="rgba(0,0,0,0)"),
     )
     return fig
 
@@ -963,7 +1031,7 @@ with f2:
     if 5 in age_pct.columns:
         max_age_t5 = age_pct[5].idxmax()
         st.markdown(
-            f'<p style="font-size:11px;color:#334155;font-weight:500;margin-top:8px;">'
+            f'<p style="font-size:11px;color:#94a3b8;font-weight:500;margin-top:8px;">'
             f'Highest Tier 5 rate: <b>{max_age_t5}</b> age group '
             f'({age_pct.loc[max_age_t5, 5]:.1f}%)</p>',
             unsafe_allow_html=True,
@@ -983,7 +1051,7 @@ with f3:
     if 5 in edu_pivot.columns:
         max_edu_t5 = edu_pivot[5].idxmax()
         st.markdown(
-            f'<p style="font-size:11px;color:#334155;font-weight:500;margin-top:8px;">'
+            f'<p style="font-size:11px;color:#94a3b8;font-weight:500;margin-top:8px;">'
             f'Highest Tier 5 rate: <b>{max_edu_t5}</b> '
             f'({edu_pivot.loc[max_edu_t5, 5]:.1f}%)</p>',
             unsafe_allow_html=True,
