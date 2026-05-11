@@ -306,7 +306,7 @@ When working on the SBDR project:
 
 ---
 
-## Project Phase Status (updated 2026-04-29)
+## Project Phase Status (updated 2026-05-10)
 
 ### Phase A — COMPLETE ✅
 All 5 notebooks done. Final output: `data/processed/sbdr_final_dataset.csv` (30K × 88)
@@ -335,36 +335,45 @@ source .venv/bin/activate && nohup streamlit run dashboard.py --server.port 8501
 **Access:** http://localhost:8501
 
 ### Design
-- Dark background `#060b18` with radial gradient ambient glows
-- Fonts: **Orbitron** (headlines/KPI values) + **Space Mono** (body) from Google Fonts
-- Glassmorphism cards with `rgba(255,255,255,0.03)` background + border glow
+- Pure black background `#000000`, cards `#080808`
+- Fonts: **Inter** (body, via config.toml + st.html) + **Orbitron** (KPI values) + **DM Mono** (monospace)
+- CSS injected via `st.html()` (not `st.markdown`) — required for reliable `@import` and font inheritance
+- `.streamlit/config.toml` sets Inter as theme font (protects Material Symbols sidebar toggle)
 - JS-animated KPI counter cards via `st.components.v1.html()`
-- Plotly charts: transparent bg, `rgba(255,255,255,0.06)` gridlines
+- Plotly charts: transparent bg, `rgba(255,255,255,0.04)` gridlines
+
+### Font fix (sidebar toggle)
+- Root cause: `* { font-family: Inter !important }` broke Material Symbols Rounded ligature on sidebar toggle icon, rendering raw text "keyboard_double_arrow_right"
+- Fix: use `st.html()` (not `st.markdown`), scope CSS via `:where()` and `html/body/.stApp` inheritance, explicitly protect `[data-testid="collapsedControl"] *` with Material Symbols Rounded font
 
 ### Data source
-`data/processed/09_with_audit_tiers.csv` — 30,000 rows × 142 columns (all real pipeline output, no fabricated values)
+`data/processed/09_with_audit_tiers.csv` — 30,000 rows × 142 columns
 
-### Sections
-1. Hero header + 4 animated KPI cards (portfolio size, Tier 5 count, accuracy, AUC-ROC)
-2. Sidebar: tier filter, distress slider, anomaly checkbox, model metrics, dataset info
-3. Row 1: Tier distribution bar chart + Top SHAP features bar chart
-4. Row 2: Distress score histogram + Branch contribution donut
-5. Multi-Branch Customer Evidence: FinBERT chat panel, BiLSTM payment timeline, XGBoost tier probabilities, Sparkov signals
-6. B3.5 Audit Panel: spotlight Tier 5 case + full audit roster table
-7. Fairness & Demographic Audit (C2): gender / age group / education stacked 100% bars
-8. Customer Roster: searchable/filterable dataframe with full 142-column output
+### Tabs (7 total)
+1. **Overview** — Full-width tier distribution bar chart + 5 tier summary pills (count, %, exposure $M)
+2. **Portfolio** — Credit exposure by tier ($M) + Risk Map scatter (distress vs delay) + distress histogram + customer roster (top 200 by distress, searchable)
+3. **Customer Insight** — Per-customer deep dive: pick any of 30K customers, see FinBERT turns, BiLSTM payment timeline, XGBoost tier probs, Sparkov signals, audit flags
+4. **Audit & Risk** — 4 KPI cards + B3.5 spotlight case + Tier 5 strategic default roster (485 accounts, searchable, rule breakdown)
+5. **Fairness** — Stacked 100% bar charts by gender/age/education + fairness verdict summary table
+6. **What-If** — Interactive simulator: 5 sliders/toggles (pay delay, distress, fraud rate, anomaly, default) → live tier prediction + NBA + audit rules triggered
+7. **Model** — SHAP feature importance chart + branch contribution donut + 5 performance metrics (large coloured numbers) + 4 artifact images (confusion matrix, SHAP beeswarm, audit lift, BiLSTM loss curve)
+
+### Sidebar
+- Shield SVG brand icon + "Debt Recovery Intelligence" label
+- Filters: Recovery Tier (multiselect), Distress Score (range slider), Anomaly Only (checkbox)
+- Active filter count badge, Reset Filters button
+- Live pulse dot footer
 
 ### Known CSS fixes applied
-- `#MainMenu, footer, header { visibility: hidden }` caused sidebar toggle to disappear in Streamlit 1.55 — fixed by only hiding specific toolbar elements inside header, not the header itself
-- `font=dict(size=X)` + `font_color=` magic underscore conflict in Plotly legend dicts — merged into `font=dict(size=X, color=Y)`
-- All `#334155` text color references replaced with `#64748b` or `#94a3b8` (was near-invisible on dark bg)
-- Bar chart `textfont` colors: `#334155` → `#94a3b8`
-- TIER_COLORS[5] changed from `#1e293b` (invisible on dark) to `#9333ea` (purple)
-- TIER_DIM changed from `#e2e8f0` (bright on dark) to `rgba(255,255,255,0.12)`
+- Sidebar toggle: `st.html()` + scoped CSS + Material Symbols protection
+- All near-invisible dark text colors (`#1e1e1e`, `#1a1a1a`, `#2d2d2d`, `#222222`, `#0f0f0f`) replaced with `#475569` / `#64748b`
+- Inactive tab color: `#3a3a3a` → `#475569`; hover: `#6b6b6b` → `#94a3b8`
+- Chart textfont, tickfont, hline annotation colors all updated to `#475569`
 
-### Supporting docs created
+### Supporting docs
 - `LIMITATIONS.md` — L1–L5 known limitations with root causes, measured impact, mitigations
-- `README.md` — updated to reflect all Phase B complete, C1+C2 complete
+- `README.md` — all phases complete
+- `tests/test_pipeline.py` — 38 unit tests (data shapes, model artifacts, pipeline integrity, dashboard syntax)
 
 ---
 
