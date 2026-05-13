@@ -4,12 +4,14 @@ import pandas as pd
 import plotly.graph_objects as go
 import json
 import re
+import os
 from pathlib import Path
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 ROOT          = Path(__file__).parent
 DATA_PATH     = ROOT / "data/processed/09_with_audit_tiers.csv"
 MANIFEST_PATH = ROOT / "models/xgboost/xgboost_manifest.json"
+DATA_URL_ENV  = "SBDR_DATA_URL"
 
 # ── Constants ─────────────────────────────────────────────────────────────────
 TIER_NAMES  = {1: "Standard Reminder", 2: "Soft Assist", 3: "Hardship Plan",
@@ -550,9 +552,41 @@ def tier_prob_bars(row: pd.Series) -> str:
 
 
 # ── Data ──────────────────────────────────────────────────────────────────────
+DATA_URL_FALLBACK = (
+    "https://github.com/RajdeepOfGithub/SBDR/releases/download/"
+    "v1.0-data/09_with_audit_tiers.csv"
+)
+
+def get_data_url() -> str | None:
+    url = os.getenv(DATA_URL_ENV)
+    if url:
+        return url
+
+    try:
+        secret = st.secrets.get(DATA_URL_ENV) or st.secrets.get("data_url")
+        if secret:
+            return secret
+    except Exception:
+        pass
+
+    return DATA_URL_FALLBACK
+
+
 @st.cache_data
 def load_data() -> pd.DataFrame:
-    return pd.read_csv(DATA_PATH)
+    if DATA_PATH.exists():
+        return pd.read_csv(DATA_PATH)
+
+    data_url = get_data_url()
+    if data_url:
+        return pd.read_csv(data_url)
+
+    st.error(
+        "Dashboard data file is missing. For local runs, create "
+        f"`{DATA_PATH.relative_to(ROOT)}`. For Streamlit Cloud, add a secret named "
+        f"`{DATA_URL_ENV}` that points to the hosted audit dataset CSV."
+    )
+    st.stop()
 
 
 @st.cache_data
@@ -714,6 +748,7 @@ tier5_count        = int((df["recovery_tier_final"] == 5).sum())
 high_risk_limit    = df[df["recovery_tier_final"].isin([4, 5])]["LIMIT_BAL"].sum()
 avg_distress_all   = df["distress_avg"].mean()
 anomaly_count      = int(df["bilstm_anomaly_flag"].sum())
+anomaly_pct        = (anomaly_count / total_customers * 100) if total_customers else 0
 
 distress_color  = "#f59e0b" if avg_distress_all > 0.50 else "#10b981"
 distress_status = "Elevated" if avg_distress_all > 0.50 else "Stable"
@@ -761,7 +796,7 @@ with k3:
              distress_status, distress_color, distress_color)
 with k4:
     kpi_card("Behavioural Anomalies", f"{anomaly_count:,}",
-             "5.0% of portfolio  ·  BiLSTM P95", "#7c3aed", "#7c3aed")
+             f"{anomaly_pct:.1f}% of portfolio  ·  BiLSTM P95", "#7c3aed", "#7c3aed")
 
 st.markdown('<div style="height:6px;"></div>', unsafe_allow_html=True)
 
@@ -778,7 +813,7 @@ with tab_overview:
 
     card_open()
     card_header("Recovery Tier Distribution",
-                "Final classification after B3.5 strategic default audit layer · 30,000 customers")
+                f"Final classification after B3.5 strategic default audit layer · {len(df):,} customers")
     tier_counts = df["recovery_tier_final"].value_counts().sort_index()
     pct         = (tier_counts / len(df) * 100).round(1)
     bar_colors  = [TIER_COLORS[i] if i in active_tiers else TIER_DIM for i in tier_counts.index]
@@ -920,7 +955,7 @@ with tab_portfolio:
 
     # Distress histogram
     card_open()
-    filt_label = f"{len(filtered_df):,} customers matching filters" if filters_active else "All 30,000 customers"
+    filt_label = f"{len(filtered_df):,} customers matching filters" if filters_active else f"All {len(df):,} customers"
     card_header("Distress Score Distribution", f"{filt_label} · per-tier overlay")
 
     fig_hist = go.Figure()
