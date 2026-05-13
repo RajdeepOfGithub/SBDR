@@ -323,16 +323,32 @@ All 5 notebooks done. Final output: `data/processed/sbdr_final_dataset.csv` (30K
 - C2 Fairness Audit: COMPLETE ✅ — in dashboard, SEX/AGE/EDUCATION sections
 - C3 Final Testing + Documentation: COMPLETE ✅ — `tests/test_pipeline.py` (38 tests, all passing)
 
+### Phase E — Dashboard Deployment — COMPLETE ✅ (2026-05-13)
+- **Live URL:** https://sbdr-dashboard.streamlit.app/
+- **Platform:** Streamlit Community Cloud (free tier, public repo)
+- **Data hosting:** `09_with_audit_tiers.csv` (60MB) attached to GitHub Release `v1.0-data`
+  — URL: `https://github.com/RajdeepOfGithub/SBDR/releases/download/v1.0-data/09_with_audit_tiers.csv`
+  — NOT committed to git (correct practice — data files stay out of repo history)
+- **Deployment deps:** `requirements.txt` slimmed to 3 packages (streamlit, pandas, plotly)
+  — Full ML deps preserved in `requirements_deploy.txt` for reference
+- **Data loading logic in `dashboard.py`:**
+  1. Local file (`data/processed/09_with_audit_tiers.csv`) — used in local dev
+  2. Env var `SBDR_DATA_URL` — optional override
+  3. Streamlit secret `SBDR_DATA_URL` or `data_url` — optional override
+  4. Hardcoded `DATA_URL_FALLBACK` (GitHub Release URL) — production fallback, zero config needed
+- **`runtime.txt`:** `python-3.11` (already present)
+
 ---
 
 ## Dashboard (`dashboard.py`) — Current State
 
 **Streamlit version:** 1.55.0
-**Start command:**
+**Live (cloud):** https://sbdr-dashboard.streamlit.app/
+**Local start command:**
 ```bash
 source .venv/bin/activate && nohup streamlit run dashboard.py --server.port 8501 --server.headless true > /tmp/streamlit.log 2>&1 &
 ```
-**Access:** http://localhost:8501
+**Local access:** http://localhost:8501
 
 ### Design
 - Pure black background `#000000`, cards `#080808`
@@ -388,3 +404,102 @@ source .venv/bin/activate && nohup streamlit run dashboard.py --server.port 8501
 - XGBoost: 7 cols (recovery_tier, tier_prob_1–5)
 - Audit: 7 cols (recovery_tier_final, audit_rule, audit_escalated, audit_deescalated, etc.)
 
+
+
+---
+
+## Phase D — Explainer Video (`sbdr_explainer.html`) — COMPLETE ✅
+
+### File locations
+- **HTML player:** `sbdr_explainer.html` (self-contained, ~1,200 lines)
+- **Audio files:** `sbdr_video_assets/audio/s-*.mp3` (16 ElevenLabs files + legacy files)
+- **Narration script:** `sbdr_narration_script.md`
+- **Asset manifest:** `sbdr_video_assets.md`
+
+### Video design
+- **18 scenes** across 4 acts (Intro / Act 1 Architecture / Act 2 Five Characters / Act 3 Results + Outro)
+- **5 character stories** covering all recovery tiers: Sofia Chen (T1), Priya Sharma (T2), Maria Rodriguez (T3), Robert Thompson (T4), James Mitchell (T5)
+- **Story scene structure:** bad outcome (without SBDR) → film-reel REWIND overlay → good outcome (with SBDR)
+- **Fallback timer:** every scene has a `dur`-second duration timer; speech completion fires a shorter 1.5s advance that wins first
+- **Start paused:** `running = false` on init; first ▶ Play click is the required browser user gesture for speech API
+
+### ElevenLabs audio (16 files)
+- **Voice:** Roger (`voice_id: CwhRBWXzGAHq8TQ4Fs17`) — Laid-Back, Casual, Resonant
+- **Model:** `eleven_multilingual_v2`
+- **Settings:** stability=0.55, similarity_boost=0.75, style=0.15, speed=0.92, mp3_44100_128
+- **Files generated:**
+  - `s-title.mp3`, `s-problem.mp3`, `s-arch.mp3`
+  - `s-sofia-story-bad.mp3`, `s-sofia-story-good.mp3`
+  - `s-priya-story-bad.mp3`, `s-priya-story-good.mp3`
+  - `s-maria-story-bad.mp3`, `s-maria-story-good.mp3`
+  - `s-robert-story-bad.mp3`, `s-robert-story-good.mp3`
+  - `s-james-story-bad.mp3`, `s-james-story-good.mp3`
+  - `s-shap.mp3`, `s-numbers.mp3`, `s-close.mp3`
+- **7 tech/analytics scenes** (`s-sofia-tech`, `s-priya-tech`, `s-maria-tech`, `s-robert-tech`, `s-james-tech`, `s-metrics`, `s-fairness`) use Web Speech API TTS fallback — no ElevenLabs file
+
+### Audio playback architecture (in HTML JS)
+```javascript
+// AUDIO_MAP maps scene IDs to MP3 paths
+const AUDIO_BASE = 'sbdr_video_assets/audio/';
+const AUDIO_MAP = { 's-title': AUDIO_BASE + 's-title.mp3', ... };
+
+// speak() tries MP3 first, falls back to Web Speech API
+function speak(text, onEnd, audioSrc) { ... }
+function speakTTS(text, onEnd) { ... }  // Web Speech API
+function stopSpeech() { synth.cancel(); /* also stops currentAudio */ }
+```
+- `startScene(idx)` passes `AUDIO_MAP[s.id]`
+- `startStoryScene(idx)` passes `AUDIO_MAP[s.id + '-bad']` and `AUDIO_MAP[s.id + '-good']`
+
+### Known bugs fixed during development
+1. **No sound on page load** — browser blocks speech without user gesture; fixed by `running = false` init
+2. **Fast-forward race** — `u.onerror` was calling `onEnd()` → 1.5s advance every scene; fixed by removing `onEnd` from onerror
+3. **Missing fallback timer** — normal scenes had no duration timer if voice failed; fixed by always calling `scheduleAdvance(idx, s.dur * 1000)` first
+4. **Bad story panel invisible** — `.story-panel.bad` had `opacity:0` with no reveal rule; fixed with CSS `.scene.active .story-panel.bad { animation: slideInLeft ... }`
+5. **Mini SHAP bars invisible** — `.ms-row` needed `.scene.active .ms-row` CSS animation rule with nth-child delays
+
+### Rewind overlay
+- `#rewind-overlay` div with CSS film strip animation (`@keyframes stripScroll`)
+- Orbitron font "⟳ REWIND" label, fades in → holds 2.6s → fades out
+- `showRewind(onDone)` callback fires after overlay fades out + 400ms
+
+### ElevenLabs free tier note
+- Budget at time of generation: ~6,453 chars remaining of 10,000/month
+- 16 files consumed ~6,271 chars total
+
+---
+
+### Phase D Update — Sound Effects + Stick Figure Animations (2026-05-12)
+
+#### Layer 1 — Sound Effects (Web Audio API)
+- **ElevenLabs `text_to_sound_effects` blocked** — requires `sound_generation` permission (paid Creator tier+). Free tier only covers TTS.
+- **Solution:** Synthesized sound effects using browser-native Web Audio API (zero cost, works offline)
+- Three functions added to `sbdr_explainer.html` JS:
+  - `sfxRewind()` — bandpass-filtered white noise burst, pitch sweeps 2800→600Hz (~0.42s). Fires at top of `showRewind()`.
+  - `sfxSuccess()` — ascending C-E-G major chime (523→659→783 Hz, sine waves, 0.13s stagger). Fires when good outcome panel slides in.
+  - `sfxAlert()` — triple square-wave buzz (200/250/200 Hz, 0.19s stagger). Fires instead of success for `s-james-story` only (legal escalation outcome).
+- Web Audio context (`_aC`) created lazily on first use — avoids browser autoplay restrictions.
+
+#### Layer 2 — Stick Figure SVG Animations
+- Every story panel (10 total — bad + good × 5 characters) now has an animated SVG stick figure
+- Layout: `.panel-inner` flex row — figure (70px wide) on left, text on right (`.panel-text`)
+- SVG spec: `viewBox="0 0 72 90"`, 64×80px rendered, `stroke-linecap:round`
+- CSS animations:
+  - Bad figures: `sfShake` (±4px + ±5deg) at 2s after scene activates, 4 cycles
+  - Good figures: `sfBounce` (−8px) + `sfPop` (scale 1.14) at 3.6s after good panel slides in, 3 cycles
+
+| Character | Bad pose | Bad props | Good pose | Good props |
+|---|---|---|---|---|
+| Sofia (T1) | Arms raised in shock | ✉️ ❌ | Arms in victory V | 📱 ✓ |
+| Priya (T2) | Arms out stressed | 📞 ⚡ | Arms relaxed/calm | ⏸ 📅 |
+| Maria (T3) | Arms drooping overwhelmed | 📬 😰 | Handshake extended | 🤝 📋 |
+| Robert (T4) | Body hunched | 🏥 ⚖️ | Open welcoming arms | 🫂 ❄️ |
+| James (T5) | Casual smug walk | 💳 🏃 | Stop-hand raised | 🚫 ⚖️ |
+
+#### How to serve the video locally
+```bash
+cd /home/roy/Main_Dir/projects/SBDR
+python3 -m http.server 8502 --bind 127.0.0.1 &
+# Open: http://127.0.0.1:8502/sbdr_explainer.html
+```
+**Must use HTTP server** (not `file://`) — MP3 audio files load via relative paths which require a proper HTTP origin.
