@@ -78,47 +78,31 @@ A **rule-based audit layer** sits on top to catch strategic defaulters the model
 ---
 
 ## Repository Structure
-SBDR/
-├── README.md                    # This file
-├── LIMITATIONS.md               # Detailed project limitations
-├── requirements.txt             # Full dependency list
-├── requirements_deploy.txt      # Lightweight deployment dependencies
-├── dashboard.py                 # Streamlit dashboard entry point
-├── .gitignore
-│
-├── notebooks/                   # Ordered Jupyter notebooks (run 01→09)
-│   ├── 01_uci_cleaning.ipynb           # UCI Credit Card data cleaning
-│   ├── 02_lending_club_merge.ipynb     # Lending Club merge + demographics
-│   ├── 03_sparkov_aggregation.ipynb    # Sparkov transaction profiles
-│   ├── 04_chat_generation.ipynb        # GPT-4o synthetic chat generation
-│   ├── 05_feature_engineering.ipynb    # 22 derived features
-│   ├── 06_eda.ipynb                    # Exploratory data analysis
-│   ├── 07_finbert_sentiment.ipynb      # FinBERT distress scoring
-│   ├── 08_bilstm_xgboost.ipynb        # BiLSTM autoencoder + XGBoost training
-│   └── 09_audit_layer.ipynb            # Rule-based strategic default detection
-│
-├── src/                         # Reusable Python modules
-│   ├── data_loader.py
-│   ├── feature_engine.py
-│   ├── finbert_scorer.py
-│   ├── bilstm_model.py
-│   ├── xgboost_classifier.py
-│   └── audit_layer.py
-│
-├── data/
-│   ├── raw/                     # Original datasets (not tracked — see Dataset section)
-│   └── processed/               # Cleaned + merged outputs from notebooks
-│
-├── models/                      # Trained model artifacts
-│   └── xgb_model.json           # Final XGBoost model (2.1 MB)
-│
-├── dashboard/                   # Dashboard components and config
-├── tests/                       # Unit tests (38 tests, all passing)
-│   └── test_pipeline.py
-├── docs/                        # Additional documentation
-└── team/                        # Team member info
 
----
+| Folder / File | Description |
+|--------------|-------------|
+| `notebooks/` | Ordered Jupyter notebooks — run 01 through 09 sequentially |
+| `notebooks/01_uci_cleaning.ipynb` | UCI Credit Card data cleaning |
+| `notebooks/02_lending_club_merge.ipynb` | Lending Club merge + demographics |
+| `notebooks/03_sparkov_aggregation.ipynb` | Sparkov transaction profiles |
+| `notebooks/04_chat_generation.ipynb` | GPT-4o synthetic chat generation |
+| `notebooks/05_feature_engineering.ipynb` | 22 derived features |
+| `notebooks/06_eda.ipynb` | Exploratory data analysis |
+| `notebooks/07_finbert_sentiment.ipynb` | FinBERT distress scoring |
+| `notebooks/08_bilstm_xgboost.ipynb` | BiLSTM autoencoder + XGBoost training |
+| `notebooks/09_audit_layer.ipynb` | Rule-based strategic default detection |
+| `src/` | Reusable Python modules (data_loader, feature_engine, finbert_scorer, bilstm_model, xgboost_classifier, audit_layer) |
+| `data/raw/` | Original datasets (not tracked — see Dataset section) |
+| `data/processed/` | Cleaned + merged outputs from notebooks |
+| `models/` | Trained model artifacts (xgb_model.json — 2.1 MB) |
+| `dashboard/` | Dashboard components and config |
+| `dashboard.py` | Streamlit dashboard entry point |
+| `tests/test_pipeline.py` | 38 unit tests, all passing |
+| `docs/` | Additional documentation |
+| `team/` | Team member info |
+| `requirements.txt` | Full dependency list |
+| `requirements_deploy.txt` | Lightweight deployment dependencies |
+| `LIMITATIONS.md` | Detailed project limitations |
 
 ## Dataset
 
