@@ -213,8 +213,6 @@ The Streamlit dashboard serves as the relationship manager's command center with
 
 🔗 **Live Demo:** https://sbdr-dashboard.streamlit.app/
 
-The Streamlit dashboard serves as the relationship manager's command center with four panels:
-
 ---
 
 ## Getting Started
