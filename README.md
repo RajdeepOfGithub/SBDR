@@ -209,6 +209,11 @@ The Streamlit dashboard serves as the relationship manager's command center with
 2. **Multi-Branch Evidence** — View FinBERT score + BiLSTM flags + XGBoost prediction side by side
 3. **Fairness Audit** — Real-time demographic distribution across all 5 tiers
 4. **Strategic Default Panel** — Review the 485 flagged customers before escalation
+   ## Dashboard
+
+🔗 **Live Demo:** https://sbdr-dashboard.streamlit.app/
+
+The Streamlit dashboard serves as the relationship manager's command center with four panels:
 
 ---
 
@@ -345,6 +350,5 @@ Python 3.11 · PyTorch · HuggingFace Transformers · XGBoost · SHAP · Streaml
 
 <p align="center">
   <b>DATA 606 Capstone — University of Maryland, Baltimore County — Spring 2026</b>
-      </b>Link for the dashboard:  https://sbdr-dashboard.streamlit.app/</b>
 </p>
 
