@@ -344,8 +344,7 @@ Python 3.11 · PyTorch · HuggingFace Transformers · XGBoost · SHAP · Streaml
 ---
 
 <p align="center">
-  <b>DATA 606 Capstone — University of Maryland, Baltimore County — Spring 2026</b>
+  <b>DATA 606 Capstone — University of Maryland, Baltimore County — Spring 2026
+      Link for the dashboard:  https://sbdr-dashboard.streamlit.app/</b>
 </p>
 
-
-Link for the dashboard:  https://sbdr-dashboard.streamlit.app/
